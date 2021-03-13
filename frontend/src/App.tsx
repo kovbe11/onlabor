@@ -3,6 +3,7 @@ import Dashboard from "./Dashboard";
 import TempContent from "./tempContent/TempContent";
 import Navigation from "./Navigation";
 import {Route, BrowserRouter as Router, Switch} from "react-router-dom";
+import Products from "./model/Product";
 
 function TempOne(){
     return <div>
@@ -36,7 +37,7 @@ function App() {
             }>
                 <Switch>
                     <Route path="/" exact component={TempContent}/>
-                    <Route path="/products" exact component={TempOne}/>
+                    <Route path="/products" exact component={Products}/>
                     <Route path="/shops" exact component={TempTwo}/>
                     <Route path="/sales" exact component={TempThree}/>
                     <Route path="/orders" exact component={TempFour}/>
