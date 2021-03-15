@@ -4,6 +4,7 @@ import TempContent from "./tempContent/TempContent";
 import Navigation from "./Navigation";
 import {Route, BrowserRouter as Router, Switch} from "react-router-dom";
 import Products from "./model/Product";
+import ProductForm from "./model/ProductForm";
 
 function TempOne(){
     return <div>

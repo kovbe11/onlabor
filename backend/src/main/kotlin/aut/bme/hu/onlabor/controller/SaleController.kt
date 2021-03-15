@@ -8,9 +8,9 @@ import aut.bme.hu.onlabor.utils.findProductOrThrow
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
-
+@CrossOrigin(origins = ["*"])
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/sales")
 class SaleController(
         private val saleRepository: SaleRepository,
         private val soldItemRepository: SoldItemRepository,

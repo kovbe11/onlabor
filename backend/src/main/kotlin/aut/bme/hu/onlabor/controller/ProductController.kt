@@ -9,6 +9,7 @@ import aut.bme.hu.onlabor.utils.findCategoryByNameOrThrow
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
+@CrossOrigin(origins = ["*"])
 @RestController
 @RequestMapping("/api/products")
 class ProductController(private val productRepository: ProductRepository,
@@ -23,20 +24,35 @@ class ProductController(private val productRepository: ProductRepository,
                 ResponseEntity.ok(it)
             }.orElse(ResponseEntity.notFound().build())
 
+    private fun patchProduct(id: Int, patch: PatchProductDTO): Product? =
+            productRepository.findById(id).map { product ->
+                patch.name?.also { product.name = it }
+                patch.available?.also { product.available = it }
+                patch.description?.also { product.description = it }
+                patch.categoryName?.also {
+                    product.category = findCategoryByNameOrThrow(it, categoryRepository)
+                }
+
+                productRepository.save(product)
+            }.orElse(null)
+
+
+//    @PatchMapping
+//    fun patchProductsInBulk(@RequestBody patchings: Map<Int, PatchProductDTO>):
+//            ResponseEntity<List<Product>> {
+//        val patchedProducts: MutableList<Product> = mutableListOf()
+//        patchings.forEach { (id, patching) ->
+//            val product = patchProduct(id, patching)
+//        }
+//    }
 
     @PatchMapping("/{id}")
     fun patchProductById(@PathVariable(value = "id") productID: Int,
                          @RequestBody newProductDTO: PatchProductDTO): ResponseEntity<Product> =
-            productRepository.findById(productID).map { product ->
-                newProductDTO.name?.also { product.name = it }
-                newProductDTO.available?.also { product.available = it }
-                newProductDTO.description?.also { product.description = it }
-                newProductDTO.categoryName?.also {
-                    product.category = findCategoryByNameOrThrow(it, categoryRepository)
-                }
-
-                ResponseEntity.ok().body(productRepository.save(product))
-            }.orElse(ResponseEntity.notFound().build())
+            patchProduct(productID, newProductDTO).let {
+                if (it != null) ResponseEntity.ok().body(it)
+                else ResponseEntity.notFound().build()
+            }
 
 
     @PutMapping("/{id}")

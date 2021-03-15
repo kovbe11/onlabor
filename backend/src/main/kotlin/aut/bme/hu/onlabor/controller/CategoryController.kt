@@ -5,6 +5,7 @@ import aut.bme.hu.onlabor.repository.CategoryRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
+@CrossOrigin(origins = ["*"])
 @RestController
 @RequestMapping("/api/categories")
 class CategoryController(private val categoryRepository: CategoryRepository) {
