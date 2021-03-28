@@ -1,10 +1,9 @@
-import React, {useState} from "react"
+import React from "react"
 import {useForm} from 'react-hook-form';
 import {Product, productApi} from "./Product"
-import FormInput from "../components/FormInputs";
+import {FormInput} from "../components/FormInputs";
 import {Button} from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import {Redirect} from "react-router";
 
 const useStyles = makeStyles(theme => ({
     field: {

@@ -42,6 +42,7 @@ data class PostOrderItemDTO(
         val status: OrderStatus
 )
 
+//ez csúnya, úgy kéne mint a categoryt!
 enum class OrderStatus {
     WAITING_TO_BE_ORDERED, JUST_ORDERED, ARRIVED
 }
