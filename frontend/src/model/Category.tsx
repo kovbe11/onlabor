@@ -1,4 +1,4 @@
-import React from "react"
+export {}
 
 export interface Category {
     id: number,

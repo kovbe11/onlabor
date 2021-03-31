@@ -4,7 +4,8 @@ import TempContent from "./tempContent/TempContent";
 import Navigation from "./Navigation";
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import Products from "./model/Product";
-import {OrderForm} from "./model/OrderForm";
+import {F} from "./model/OrderForm";
+import OrderList from "./components/OrderList";
 
 function TempOne() {
     return <div>
@@ -39,9 +40,10 @@ function App() {
                 <Switch>
                     <Route path="/" exact component={TempContent}/>
                     <Route path="/products" exact component={Products}/>
-                    <Route path="/shops" exact component={OrderForm}/>
-                    <Route path="/sales" exact component={TempThree}/>
-                    <Route path="/orders" exact component={TempFour}/>
+                    <Route path="/shops" exact component={TempTwo}/>
+                    <Route path="/sales" exact component={F}/>
+                    <Route path="/orders/:id" exact component={F}/>
+                    <Route path="/orders" exact component={OrderList}/>
                 </Switch>
             </Dashboard>
         </Router>

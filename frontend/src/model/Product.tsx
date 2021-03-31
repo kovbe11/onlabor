@@ -19,7 +19,6 @@ import {
 } from '@devexpress/dx-react-grid-material-ui';
 import axios from "axios";
 import {CircularProgress} from "@material-ui/core";
-import Toolbar from "@material-ui/core/Toolbar";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from '@material-ui/icons/Add';
 import Dialog from "@material-ui/core/Dialog";
@@ -30,6 +29,8 @@ import DialogActions from "@material-ui/core/DialogActions";
 import ProductForm from "./ProductForm";
 import {Delete} from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
+import Snackbar from "@material-ui/core/Snackbar";
+import {Alert} from "@material-ui/lab";
 
 export interface Product {
     id: number,
@@ -40,15 +41,33 @@ export interface Product {
 }
 
 // @ts-ignore
-const FocusableCell = ({onClick, ...restProps}) => (
-    // @ts-ignore
-    <Table.Cell {...restProps} tabIndex={0} onFocus={onClick}/>
-);
+const FocusableCell = ({onClick, ...restProps}) => {
+    if (restProps.column.name === 'action') {
+        return (
+            <>
+                {/* @ts-ignore*/}
+                <Table.Cell {...restProps} />
+            </>
+        )
+    }
+    return (
+        <>
+            {/* @ts-ignore*/}
+            <Table.Cell {...restProps} tabIndex={0} onFocus={onClick}/>
+        </>
+    )
+}
+
 
 export const productApi = axios.create({
     baseURL: "http://localhost:8080/api/products"
 })
 
+const ShowAlert = (severity: "error" | "success", msg: string) => (
+    <Alert severity={severity}>
+        {msg}
+    </Alert>
+)
 
 export default function Products() {
     const [rows, setRows] = useState<Product[]>([]);
@@ -56,31 +75,34 @@ export default function Products() {
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     // const [pageSize, setPageSize] = useState(3);
+    const [alertOpen, setAlertOpen] = useState(false)
+    const [alertElement, setAlertElement] = useState<any>(null)
 
     const loadData = () => {
-        console.log("started")
-        setRefresh(false)
-        if (!loading) {
+        if (!loading && refresh) {
+            setRefresh(false)
             setLoading(true)
             productApi.get('')
                 .then(res => {
-                    console.log("succesful")
                     setRows(res.data)
                 })
-                .catch(() => console.log('Loading remote data was not successful'))
+                .catch(reason => {
+                    console.log(reason)
+                    setAlertElement(ShowAlert("error", "Couldn't load data from server!"))
+                    setAlertOpen(true)
+                })
                 .finally(() => setLoading(false))
         }
     }
 
-    useEffect(() => loadData(), [refresh])
+    useEffect(() => loadData(), [loading, refresh])
 
     const commitChanges = (changes: ChangeSet) => {
         let changed = changes.changed
-        let deleted = changes.deleted
-        console.log(deleted)
 
-        if ((!changed || Object.values(changed).every(prop => prop === undefined)) &&
-            (!deleted || Object.values(deleted).every(prop => prop === undefined))) {
+        //&& (!deleted || Object.values(deleted).every(prop => prop === undefined))
+
+        if ((!changed || Object.values(changed).every(prop => prop === undefined))) {
             console.log("no changes")
             return
         }
@@ -88,14 +110,24 @@ export default function Products() {
         if (changed) {
             requests.push(productApi.patch('', changed))
         }
-        if (deleted) {
-            for (const item of deleted) {
-                console.log(item)
-                requests.push(productApi.delete('/' + item))
-            }
-        }
+        // if (deleted) {
+        //     for (const item of deleted) {
+        //         console.log(item)
+        //         requests.push(productApi.delete('/' + item))
+        //     }
+        // }
 
-        axios.all(requests).catch(reason => console.log(reason)).finally(() => setRefresh(true))
+        axios.all(requests)
+            .then(() => {
+                setAlertElement(ShowAlert("success", "Success!"))
+                setAlertOpen(true)
+            })
+            .catch(reason => {
+                console.log(reason)
+                setAlertElement(ShowAlert("error", "Something went wrong!"))
+                setAlertOpen(true)
+            })
+            .finally(() => setRefresh(true))
 
 
         // let changedRows: Product[];
@@ -117,21 +149,55 @@ export default function Products() {
         // setRows(changedRows);
     };
 
+    const deleteItem = (id: number) => {
+        if (loading) {
+            return
+        }
+        // eslint-disable-next-line
+        if (window.confirm('Are you sure you want to delete this row?')) {
+            setLoading(true)
+            productApi.delete('/' + id)
+                .then(() => {
+                    setAlertElement(ShowAlert("success", "Product deleted"))
+                    setAlertOpen(true)
+                    setRefresh(true)
+                })
+                .catch(reason => {
+                    console.log(reason)
+                    setAlertElement(ShowAlert("error", "Deleting Product failed! You might have an order, or a Sale still i"))
+                    setAlertOpen(true)
+                })
+                .finally(() => setLoading(false))
+        }
+    }
+
     const columns: Column[] = [
         {name: 'id', title: 'ID', getCellValue: row => (row.id)},
         {name: "name", title: "Product name", getCellValue: row => (row.name)},
         {name: 'available', title: 'In stock', getCellValue: row => (row.available)},
-        {name: 'categoryName', title: 'Category', getCellValue: row => (row.category.name)}
+        {name: 'categoryName', title: 'Category', getCellValue: row => (row.category.name)},
+        {
+            name: 'action', title: ' ', getCellValue: row => (
+                <IconButton
+                    onClick={() => {
+                        deleteItem(row.id)
+                    }}
+                >
+                    <Delete color="primary"/>
+                </IconButton>
+            )
+        }
     ];
 
     const [columnWidths] = useState([
-        {columnName: 'id', width: '8%'},
-        {columnName: 'name', width: '45%'},
-        {columnName: 'available', width: '10%'},
+        {columnName: 'id', width: '5%'},
+        {columnName: 'name', width: '35%'},
+        {columnName: 'available', width: '13%'},
         {columnName: 'categoryName', width: '30%'},
+        {columnName: 'action', width: '10%'}
     ])
 
-    const disabledColumns = [{columnName: 'id', editingEnabled: false}]
+    const disabledColumns = [{columnName: 'id', editingEnabled: false}, {columnName: '', editingEnabled: false}]
     const [open, setOpen] = React.useState(false);
 
     const handleClickOpen = () => {
@@ -147,25 +213,8 @@ export default function Products() {
         </Fab>
     )
 
-    // @ts-ignore
-    const DeleteButton = ({onExecute}) => (
-        <IconButton
-            onClick={() => {
-                // eslint-disable-next-line
-                if (window.confirm('Are you sure you want to delete this row?')) {
-                    onExecute()
-                    //productApi.delete('/').then(() => setRefresh(true)).catch(err => console.log(err))
-                }
-            }}
-            title="Delete row"
-        >
-            <Delete/>
-        </IconButton>
-    );
-
     const commandComponents = {
         add: AddButton,
-        delete: DeleteButton
     }
 
     const Command: React.ComponentType<TableEditColumnBase.CommandProps> = (commandProps) => {
@@ -191,6 +240,7 @@ export default function Products() {
                     </Button>
                 </DialogActions>
             </Dialog>
+            {loading && <CircularProgress/>}
             <Grid
                 rows={rows}
                 columns={columns}
@@ -213,14 +263,14 @@ export default function Products() {
                 <TableInlineCellEditing/>
                 <TableEditColumn
                     showAddCommand={!open}
-                    showDeleteCommand
                     commandComponent={Command}
                     width='7%'
                 />
                 <PagingPanel/>
             </Grid>
-            {loading && <CircularProgress/>}
-
+            <Snackbar open={alertOpen} autoHideDuration={2000} onClose={() => setAlertOpen(false)}>
+                {alertElement}
+            </Snackbar>
         </Paper>
     );
 }

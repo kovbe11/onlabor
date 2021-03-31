@@ -53,6 +53,7 @@ export function ComboBoxInput<T>(comboProps: ComboProps<T>) {
                     renderInput={(params) => (
                         <TextField
                             {...params}
+                            fullWidth={false}
                             className={comboProps.className}
                             label={comboProps.label}
                         />
@@ -155,6 +156,7 @@ export function DatePickerInput(inputProps: InputProps) {
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker
                                 disableToolbar
+                                className={inputProps.className}
                                 format="yyyy-MM-dd"
                                 id={inputProps.name}
                                 label={inputProps.label}

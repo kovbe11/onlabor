@@ -1,4 +1,3 @@
-import React from "react";
 import axios from "axios";
 
 export interface OrderItem{
@@ -6,7 +5,7 @@ export interface OrderItem{
     itemIndex: number,
     price: number,
     amount: number,
-    productID: number | undefined,
+    product: object,
     status: string
 }
 
