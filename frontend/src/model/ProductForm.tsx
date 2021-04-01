@@ -43,6 +43,7 @@ export default function ProductForm(props: ProductFormProps) {
                                    }
                                }
                            }
+                           defaultValue=""
                 />
             </div>
             <div>
@@ -61,6 +62,7 @@ export default function ProductForm(props: ProductFormProps) {
                                    }
                                }
                            }
+                           defaultValue={0}
                 />
             </div>
             <div>
@@ -74,6 +76,7 @@ export default function ProductForm(props: ProductFormProps) {
                                    message: "Maximum 255 characters!"
                                }
                            }}
+                           defaultValue=""
                 />
             </div>
             <div>
@@ -90,6 +93,7 @@ export default function ProductForm(props: ProductFormProps) {
                                    }
                                }
                            }
+                           defaultValue=""
                 />
             </div>
             <div>

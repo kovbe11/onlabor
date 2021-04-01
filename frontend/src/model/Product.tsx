@@ -71,7 +71,7 @@ const ShowAlert = (severity: "error" | "success", msg: string) => (
 
 export default function Products() {
     const [rows, setRows] = useState<Product[]>([]);
-    const [refresh, setRefresh] = useState(false)
+    const [refresh, setRefresh] = useState(true)
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     // const [pageSize, setPageSize] = useState(3);
@@ -94,8 +94,9 @@ export default function Products() {
                 .finally(() => setLoading(false))
         }
     }
-
+    useEffect(() => loadData(), [])
     useEffect(() => loadData(), [loading, refresh])
+
 
     const commitChanges = (changes: ChangeSet) => {
         let changed = changes.changed

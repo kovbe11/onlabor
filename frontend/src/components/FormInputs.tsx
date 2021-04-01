@@ -82,10 +82,10 @@ function NormalInput(textProps: TextProps) {
                     label={textProps.label}
                     type={textProps.type}
                     error={textProps.errors ? !!textProps.errors[textProps.name] : false}
-                    defaultValue={textProps.defaultValue}
+                    // defaultValue={textProps.defaultValue}
                 />
             }
-            defaultValue=""
+            defaultValue={textProps.defaultValue}
             control={textProps.control}
             rules={textProps.rules}
         />
