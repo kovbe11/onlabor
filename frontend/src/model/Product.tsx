@@ -69,6 +69,8 @@ const ShowAlert = (severity: "error" | "success", msg: string) => (
     </Alert>
 )
 
+//todo: kiszervezni külön komponensekbe eldönteni hogy hogy editeljük
+
 export default function Products() {
     const [rows, setRows] = useState<Product[]>([]);
     const [refresh, setRefresh] = useState(true)

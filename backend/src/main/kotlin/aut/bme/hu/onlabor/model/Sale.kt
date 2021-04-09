@@ -9,7 +9,7 @@ data class Sale(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int,
     val saleDate: Date,
-    @OneToMany(mappedBy = "sale", cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "sale", cascade = [CascadeType.ALL], orphanRemoval = true)
     val soldItems: MutableList<SoldItem> = mutableListOf()
 )
 
@@ -18,6 +18,7 @@ data class PostSaleDTO(
         val soldItems: List<PostSoldItemDTO>
 )
 
-data class PatchSaleDTO(
-        val orderDate: Date
+data class PutSaleDTO(
+        val saleDate: Date,
+        val soldItems: List<PutSoldItemDTO>
 )

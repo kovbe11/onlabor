@@ -13,9 +13,9 @@ data class OrderItem(
         var price: Double,
         var amount: Int,
         @ManyToOne
+        @JoinColumn(name = "product_id", nullable = false)
         var product: Product,
-        @ManyToOne(cascade = [CascadeType.ALL])
-        @JoinColumn(name = "order_id", nullable = false)
+        @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "order_id", nullable = false)
         @JsonBackReference
         val order: Order,
         @Enumerated(EnumType.STRING)
@@ -26,12 +26,13 @@ data class OrderItem(
     }
 }
 
-data class PatchOrderItemDTO(
-        val itemIndex: Short?,
-        val price: Double?,
-        val amount: Int?,
-        val productID: Int?,
-        val status: OrderStatus?
+data class PutOrderItemDTO(
+        val id: Int,
+        val itemIndex: Short,
+        val price: Double,
+        val amount: Int,
+        val productID: Int,
+        val status: OrderStatus
 )
 
 data class PostOrderItemDTO(
@@ -42,7 +43,6 @@ data class PostOrderItemDTO(
         val status: OrderStatus
 )
 
-//ez csúnya, úgy kéne mint a categoryt!
 enum class OrderStatus {
     WAITING_TO_BE_ORDERED, JUST_ORDERED, ARRIVED
 }

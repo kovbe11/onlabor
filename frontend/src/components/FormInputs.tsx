@@ -13,7 +13,7 @@ import {
 
 interface InputProps {
     name: string
-    label: string
+    label?: string
     control: Control
     className?: string
     rules?: Exclude<RegisterOptions, 'valueAsNumber' | 'valueAsDate' | 'setValueAs'>
@@ -65,7 +65,7 @@ export function ComboBoxInput<T>(comboProps: ComboProps<T>) {
             onChange={([, data]) => data}
             name={comboProps.name}
             control={comboProps.control}
-            defaultValue={null}
+            defaultValue={comboProps.defaultValue !== undefined ? comboProps.defaultValue : null}
         />
     )
 }
@@ -109,6 +109,23 @@ function TextAreaInput(textProps: TextProps) {
             defaultValue=""
             control={textProps.control}
             rules={textProps.rules}
+        />
+    )
+}
+
+export function IdInput(props: InputProps) {
+    return (
+        <Controller
+            name={props.name}
+            as={
+                <input
+                    id={props.name}
+                    type="number"
+                    hidden
+                />
+            }
+            defaultValue={props.defaultValue || 0}
+            control={props.control}
         />
     )
 }

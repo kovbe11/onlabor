@@ -1,22 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import {Column, IntegratedPaging, PagingState, RowDetailState} from '@devexpress/dx-react-grid';
 import {Grid, PagingPanel, Table, TableHeaderRow, TableRowDetail} from '@devexpress/dx-react-grid-material-ui';
-import {Order, orderApi} from "../model/Order";
+import {Order, orderApi} from "../../model/Order";
 import {CircularProgress, Paper} from "@material-ui/core";
 import {Delete, Edit} from "@material-ui/icons";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import ProductForm from "../model/ProductForm";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
 import {Link} from "react-router-dom";
 import Snackbar from "@material-ui/core/Snackbar";
 import {Alert} from "@material-ui/lab";
 import IconButton from "@material-ui/core/IconButton";
-import {productApi} from "../model/Product";
+import {NewOrderForm} from "./OrderEditor";
+import NewEntityDialog from "../NewEntityDialog";
 
 function sumOrderItems(order: Order) {
     console.log(order)
@@ -31,7 +24,6 @@ function determineOrderStatus(order: Order) {
 
 const OrderItems = (data: any) => {
 
-    console.log(data)
 
     const columns: Column[] = [
         {name: "product", title: "Product name", getCellValue: row => row.product.name},
@@ -54,34 +46,11 @@ const OrderItems = (data: any) => {
 
 }
 
-
-// {
-//     id: 0,
-//         orderDate: new Date(),
-//     orderItems: [{
-//     id: 0,
-//     itemIndex: 0,
-//     price: 354.2,
-//     amount: 30,
-//     productID: 1,
-//     status: "WAITING_TO_BE_ORDERED",
-// }, {
-//     id: 1,
-//     itemIndex: 1,
-//     price: 1434.2,
-//     amount: 24,
-//     productID: 2,
-//     status: "WAITING_TO_BE_ORDERED"
-// }]
-// }
-
-
 const ShowAlert = (severity: "error" | "success", msg: string) => (
     <Alert severity={severity}>
         {msg}
     </Alert>
 )
-
 
 export default function OrderList() {
 
@@ -91,7 +60,6 @@ export default function OrderList() {
     const [loading, setLoading] = useState(false)
     const [currentPage, setCurrentPage] = useState(0)
 
-    const [addFormOpen, setAddFormOpen] = useState(false)
     const [alertOpen, setAlertOpen] = useState(false)
     const [alertElement, setAlertElement] = useState<any>(null)
 
@@ -108,7 +76,6 @@ export default function OrderList() {
     }
     const deleteItem = (id: number) => {
         console.log(id)
-        return;
         if (loading) {
             return
         }
@@ -130,6 +97,8 @@ export default function OrderList() {
         }
     }
 
+
+    //TODO: SWR el cachelni
     useEffect(() => loadData(), [refresh])
 
     const columns: Column[] = [
@@ -142,54 +111,49 @@ export default function OrderList() {
                 <>
                     <IconButton component={Link} to={'/orders/' + row.id}><Edit color="primary"/></IconButton>
                     <IconButton onClick={() => {
-                            deleteItem(row.id)
+                        deleteItem(row.id)
                     }}><Delete color="primary"/></IconButton>
                 </>
             )
         }
     ];
 
+
     return (
-        <Paper>
-            <Fab color="primary" style={{position: 'fixed', margin: '0.5%'}} hidden={addFormOpen} size="small"
-                 onClick={() => setAddFormOpen(true)}>
-                <AddIcon/>
-            </Fab>
-            <Dialog open={addFormOpen} onClose={() => setAddFormOpen(false)}>
-                <DialogTitle>Create new Order</DialogTitle>
-                <DialogContent>
-                    <ProductForm executeAfterSubmit={() => {
-                        setAddFormOpen(false)
-                        setRefresh(true)
-                    }}/>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setAddFormOpen(false)} color="primary">
-                        Cancel
-                    </Button>
-                </DialogActions>
-            </Dialog>
-            {loading && <CircularProgress/>}
-            <Grid rows={rows}
-                  columns={columns}
-                  getRowId={row => row.id}>
-                <PagingState
-                    currentPage={currentPage}
-                    onCurrentPageChange={setCurrentPage}
-                    pageSize={7}
-                />
-                <IntegratedPaging/>
-                <Table/>
-                <TableHeaderRow/>
-                <RowDetailState/>
-                <TableRowDetail
-                    contentComponent={OrderItems}
-                />
-                <PagingPanel/>
-            </Grid>
-            <Snackbar open={alertOpen} autoHideDuration={2000} onClose={() => setAlertOpen(false)}>
-                {alertElement}
-            </Snackbar>
-        </Paper>
+        <>
+            <Paper>
+                {loading ? (<CircularProgress/>) : (
+                    <>
+                        <Grid rows={rows}
+                              columns={columns}
+                              getRowId={row => row.id}>
+                            <PagingState
+                                currentPage={currentPage}
+                                onCurrentPageChange={setCurrentPage}
+                                pageSize={7}
+                            />
+                            <IntegratedPaging/>
+                            <Table/>
+                            <TableHeaderRow/>
+                            <RowDetailState/>
+                            <TableRowDetail
+                                contentComponent={OrderItems}
+                            />
+                            <PagingPanel/>
+                        </Grid>
+                        <NewEntityDialog title="Create new Order"
+                                         afterSubmit={() => {setRefresh(true)}}
+                                         render={(afterSubmit: () => void) =>
+                                             (<NewOrderForm executeAfterSubmit={afterSubmit}/>)}/>
+
+                    </>)}
+            </Paper>
+            <>
+                <Snackbar open={alertOpen} autoHideDuration={2000} onClose={() => setAlertOpen(false)}>
+                    {alertElement}
+                </Snackbar>
+            </>
+        </>
+
     )
 }

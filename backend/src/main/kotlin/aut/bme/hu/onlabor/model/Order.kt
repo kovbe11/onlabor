@@ -11,7 +11,7 @@ data class Order(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Int,
         val orderDate: Date,
-        @OneToMany(mappedBy = "order", cascade = [CascadeType.ALL]) @JsonManagedReference
+        @OneToMany(mappedBy = "order", cascade = [CascadeType.ALL], orphanRemoval = true) @JsonManagedReference
         val orderItems: MutableList<OrderItem> = mutableListOf()
 )
 
@@ -20,8 +20,9 @@ data class PostOrderDTO(
         val orderItems: List<PostOrderItemDTO> = listOf()
 )
 
-data class PatchOrderDTO(
-        val orderDate: Date
+data class PutOrderDTO(
+        val orderDate: Date,
+        val orderItems: List<PutOrderItemDTO> = listOf()
 )
 
 
