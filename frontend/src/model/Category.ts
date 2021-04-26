@@ -1,4 +1,3 @@
-export {}
 
 export interface Category {
     id: number,

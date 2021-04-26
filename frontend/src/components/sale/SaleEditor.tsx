@@ -1,7 +1,7 @@
-import {DatePickerInput} from "../FormInputs";
+import {DatePickerInput} from "../utils/FormInputs";
 import React from "react";
-import {saleApi, SoldItem} from "../../model/Sale";
-import {EditParentForm, NewParentForm} from "../ParentEditor";
+import {SoldItem} from "../../model/Sale";
+import {EditParentForm, NewParentForm} from "../templates/ParentEditor";
 import {SoldItemEditor} from "./SoldItemEditor";
 
 function saleDataMapping(data: any) {
@@ -34,13 +34,13 @@ export function NewSaleForm(props: NewSaleFormProps) {
                        renderChildInputs={
                            props => (
                                <SoldItemEditor index={props.index} item={props.item} control={props.control}
-                                                className={props.className}/>
+                                               className={props.className}/>
                            )
                        }
                        submitNewProps={
                            {
                                mapper: saleDataMapping,
-                               api: saleApi,
+                               apiPrefix: '/sales',
                                executeAfterSubmit: props.executeAfterSubmit
                            }
                        }/>
@@ -61,15 +61,17 @@ export function EditSaleForm() {
                         renderChildInputs={
                             props => (
                                 <SoldItemEditor index={props.index} item={props.item} control={props.control}
-                                                 className={props.className}/>
+                                                className={props.className}/>
                             )
                         }
                         submitEditProps={
                             {
                                 mapper: saleDataMapping,
-                                api: saleApi,
+                                apiPrefix: '/sales'
                             }
                         }
-                        sorter={soldItemSorter}/>
+                        sorter={soldItemSorter}
+                        redirectAfterSubmit="/sales"
+                        notFoundMessage={(id: number) => `Sale with id ${id} was not found!`}/>
     )
 }

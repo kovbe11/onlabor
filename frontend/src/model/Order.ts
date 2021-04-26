@@ -1,19 +1,20 @@
-import axios from "axios";
+import {Product} from "./Product";
 
 export interface OrderItem{
     id: number | undefined,
     itemIndex: number,
     price: number,
     amount: number,
-    product: object,
+    product: Product,
     status: string
 }
 
 export interface Order {
-    id: number | undefined,
-    orderDate: Date,
+    id: number | undefined
+    orderDate: Date
+    orderValue: number
     orderItems: OrderItem[]
 }
-export const orderApi = axios.create({
-    baseURL: "http://localhost:8080/api/orders"
-})
+
+
+

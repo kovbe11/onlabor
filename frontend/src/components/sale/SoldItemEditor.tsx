@@ -1,22 +1,11 @@
 import {SoldItem} from "../../model/Sale";
 import {Control} from "react-hook-form";
 import Grid from "@material-ui/core/Grid";
-import {ComboBoxInput, FormInput, IdInput} from "../FormInputs";
+import {ComboBoxInput, FormInput, IdInput} from "../utils/FormInputs";
 import React from "react";
+import {useItems} from "../utils/DataProvider";
 
 
-const productOptions = [
-    {id: 1, name: 'Product1'},
-    {
-        id: 2,
-        name: "product 2 321",
-        available: 19,
-        category: {id: 1, name: "Category 1"},
-        description: "asdfegeotegerteqtqertdfv"
-    },
-    {id: 3, name: 'Product3'},
-    {id: 4, name: 'Product4'}
-]
 
 interface SoldItemProps {
     index: number
@@ -27,17 +16,26 @@ interface SoldItemProps {
 
 export function SoldItemEditor(props: SoldItemProps) {
 
+    const {items: products, isLoading, isError} = useItems('/products')
+
     return (
         <Grid container spacing={3}>
             <IdInput name={`soldItems[${props.index}].id`}
                      defaultValue={props.item.id !== undefined ? props.item.id : 0} control={props.control}/>
             <Grid item xs={12} sm={12} md={4}>
                 <ComboBoxInput name={`soldItems[${props.index}].product`} label="Product" control={props.control}
-                               options={productOptions}
-                               getOptionLabel={option => option.name}
-                               getOptionSelected={(option, value) => option.id === value.id}
+                               options={products ? products : []}
+                               getOptionLabel={option => (
+                                   // @ts-ignore
+                                   option.name
+                               )}
+                               getOptionSelected={(option, value) => (
+                                   // @ts-ignore
+                                   option.id === value.id
+                               )}
                                className={props.className}
-                               defaultValue={props.item.product !== undefined ? props.item.product : null}/>
+                               defaultValue={props.item.product !== undefined ? props.item.product : null}
+                               isLoading={isLoading}/>
             </Grid>
             <Grid item xs={9} sm={6} md={2}>
                 <FormInput name={`soldItems[${props.index}].price`} label="Price" type="number"

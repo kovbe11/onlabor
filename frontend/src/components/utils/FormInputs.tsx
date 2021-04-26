@@ -10,6 +10,7 @@ import {
     MuiPickersUtilsProvider,
     KeyboardDatePicker,
 } from '@material-ui/pickers';
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 interface InputProps {
     name: string
@@ -20,6 +21,7 @@ interface InputProps {
     errors?: DeepMap<FieldValues, FieldError>
     helperText?: string | undefined
     defaultValue?: any
+    placeholder?: string
 }
 
 interface TextProps extends InputProps {
@@ -38,6 +40,7 @@ interface ComboProps<T> extends InputProps {
     options: T[]
     getOptionLabel: (option: T) => string
     getOptionSelected: (option: T, value: T) => boolean
+    isLoading ?: boolean
 }
 
 export function ComboBoxInput<T>(comboProps: ComboProps<T>) {
@@ -56,6 +59,15 @@ export function ComboBoxInput<T>(comboProps: ComboProps<T>) {
                             fullWidth={false}
                             className={comboProps.className}
                             label={comboProps.label}
+                            InputProps={{
+                                ...params.InputProps,
+                                endAdornment: (
+                                    <React.Fragment>
+                                        {comboProps.isLoading && <CircularProgress color="inherit" size={20} />}
+                                        {params.InputProps.endAdornment}
+                                    </React.Fragment>
+                                )
+                            }}
                         />
                     )}
                     onChange={(_, data) => props.onChange(data)}

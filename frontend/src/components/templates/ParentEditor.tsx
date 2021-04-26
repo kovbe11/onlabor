@@ -1,14 +1,16 @@
 import Button from "@material-ui/core/Button";
 import {Add, ArrowUpward, Delete} from "@material-ui/icons";
-import {SaveButton} from "./SaveButton";
+import {SaveButton} from "../layout/SaveButton";
 import React, {useEffect, useState} from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {Control, useFieldArray, UseFieldArrayMethods, useForm} from "react-hook-form";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import {AxiosInstance} from "axios";
-import {useParams} from "react-router";
+import {useHistory, useParams} from "react-router";
 import {Paper} from "@material-ui/core";
-import NotFound from "./NotFound";
+import NotFound from "../layout/NotFound";
+import {onSubmitEdit, onSubmitNew, SubmitNewProps, SubmitProps} from "./ItemEditor";
+import {api} from "../utils/DataProvider";
+
 
 const useStyles = makeStyles({
     inputGroupContainer: {
@@ -103,31 +105,6 @@ function ParentEditor(props: ParentEditorProps) {
     )
 }
 
-interface SubmitProps {
-    mapper: (data: any) => any
-    api: AxiosInstance
-}
-
-interface SubmitNewProps extends SubmitProps {
-    executeAfterSubmit: () => void
-}
-
-const onSubmitNew = (setLoading: (loading: boolean) => void, props: SubmitNewProps) => {
-    let {mapper, api, executeAfterSubmit} = props
-
-    return ((data: any) => {
-        setLoading(true)
-        let mappedData = mapper(data)
-        api.post('', mappedData)
-            .then(r => {
-                console.log(r)
-                executeAfterSubmit()
-            })
-            .catch(reason => console.log(reason))
-            .finally(() => setLoading(false))
-    })
-}
-
 
 interface NewParentFormProps {
     childrenArrayName: string
@@ -161,29 +138,14 @@ export function NewParentForm(props: NewParentFormProps) {
     )
 }
 
-interface SubmitEditProps extends SubmitProps {
-    id: number
-}
-
-const onSubmitEdit = (setLoading: (loading: boolean) => void, props: SubmitEditProps) => {
-    let {mapper, api, id} = props
-
-    return ((data: any) => {
-        setLoading(true)
-        let mappedData = mapper(data)
-        api.put('/' + id, mappedData)
-            .then(r => console.log(r))
-            .catch(reason => console.log(reason))
-            .finally(() => setLoading(false))
-    })
-}
-
 interface EditParentFormProps {
     renderParentInputs: (control: Control) => JSX.Element
     renderChildInputs: (props: ChildEditorProps) => JSX.Element
     submitEditProps: SubmitProps
     childrenArrayName: string
     sorter: (data: any) => void
+    redirectAfterSubmit: string
+    notFoundMessage: (id: number) => string
 }
 
 export function EditParentForm(props: EditParentFormProps) {
@@ -201,16 +163,16 @@ export function EditParentForm(props: EditParentFormProps) {
         keyName: "key"
     })
 
+    const history = useHistory()
 
-    //TODO: check if async ()=> await thing is what im supposed to use here
     useEffect(() => {
         setLoading(true)
-        props.submitEditProps.api.get('/' + id)
+        api.get(props.submitEditProps.apiPrefix + '/' + id)
             .then((res) => {
                 setParentFound(true)
-                // res.data.orderItems.sort((a: OrderItem, b: OrderItem) => (a.itemIndex - b.itemIndex))
                 props.sorter(res.data)
                 reset(res.data)
+                console.log(res.data)
             })
             .catch(error => {
                 if (error.response.status === 404) {
@@ -223,20 +185,25 @@ export function EditParentForm(props: EditParentFormProps) {
             })
     }, [id])
 
+    if (!parentFound && !loading) {
+        return <NotFound notFoundMessage={props.notFoundMessage(id)}
+                         redirectBackLink={props.redirectAfterSubmit}/>
+    }
+
+
     return (
         <Paper>
             {loading ? (<CircularProgress/>) :
-                (!parentFound ?
-                        <NotFound notFoundMessage={`Order with id ${id} doesn't exist`} redirectBackLink="/orders"/> :
-                        (
-                            <ParentEditor
-                                onSubmit={handleSubmit(onSubmitEdit(setSaveLoading, {id: id, ...props.submitEditProps}))}
-                                control={control}
-                                fieldArrayMethods={fieldArrayMethods}
-                                renderParentInputs={props.renderParentInputs}
-                                renderChildInputs={props.renderChildInputs}
-                            id={id}/>
-                        )
+                (
+                    <ParentEditor
+                        onSubmit={handleSubmit(onSubmitEdit(() => {
+                            history.push(props.redirectAfterSubmit)
+                        }, setSaveLoading, {id: id, ...props.submitEditProps}))}
+                        control={control}
+                        fieldArrayMethods={fieldArrayMethods}
+                        renderParentInputs={props.renderParentInputs}
+                        renderChildInputs={props.renderChildInputs}
+                        id={id}/>
                 )
             }
             {saveLoading && <CircularProgress/>}

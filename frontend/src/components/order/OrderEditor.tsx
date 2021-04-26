@@ -1,8 +1,9 @@
-import {DatePickerInput} from "../FormInputs";
+import {DatePickerInput} from "../utils/FormInputs";
 import {OrderItemEditor} from "./OrderItemEditor";
 import React from "react";
-import {orderApi, OrderItem} from "../../model/Order";
-import {EditParentForm, NewParentForm} from "../ParentEditor";
+import {OrderItem} from "../../model/Order";
+import {EditParentForm, NewParentForm} from "../templates/ParentEditor";
+import {api} from "../utils/DataProvider";
 
 function orderDataMapping(data: any) {
     return {
@@ -40,7 +41,7 @@ export function NewOrderForm(props: NewOrderFormProps) {
                        submitNewProps={
                            {
                                mapper: orderDataMapping,
-                               api: orderApi,
+                               apiPrefix: '/orders',
                                executeAfterSubmit: props.executeAfterSubmit
                            }
                        }/>
@@ -67,9 +68,11 @@ export function EditOrderForm() {
                         submitEditProps={
                             {
                                 mapper: orderDataMapping,
-                                api: orderApi,
+                                apiPrefix: '/orders'
                             }
                         }
-                        sorter={orderItemSorter}/>
+                        sorter={orderItemSorter}
+                        redirectAfterSubmit="/orders"
+                        notFoundMessage={(id: number) => `Order with id ${id} was not found!`}/>
     )
 }

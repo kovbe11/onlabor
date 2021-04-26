@@ -5,8 +5,14 @@ import aut.bme.hu.onlabor.repository.ProductRepository
 import aut.bme.hu.onlabor.repository.SaleRepository
 import aut.bme.hu.onlabor.repository.SoldItemRepository
 import aut.bme.hu.onlabor.utils.findProductOrThrow
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.annotation.Secured
 import org.springframework.web.bind.annotation.*
+import java.sql.Date
 
 @CrossOrigin(origins = ["*"])
 @RestController
@@ -15,8 +21,36 @@ class SaleController(
         private val saleRepository: SaleRepository,
         private val productRepository: ProductRepository
 ) {
+
     @GetMapping
-    fun getAllSales(): ResponseEntity<List<Sale>> = ResponseEntity.ok(saleRepository.findAll())
+    fun getPageableSortableFilterableSales(@RequestParam(defaultValue = "7") pageSize: Int,
+                                            @RequestParam page: Int?,
+                                            @RequestParam date: Date?,
+                                            @RequestParam beforeDate: Date?,
+                                            @RequestParam afterDate: Date?,
+//                                            @RequestParam valueMin: Int?, ez az infó csak customqueryvel van jelen, todo
+//                                            @RequestParam valueMax: Int?,
+                                            @RequestParam(defaultValue = "saleDate") sortParam: String,
+                                            @RequestParam(defaultValue = "desc") sortOrder: String):
+            ResponseEntity<Page<Sale>> {
+        val sort = Sort.by(Sort.Direction.fromString(sortOrder), sortParam)
+
+        val pageable = if (page == null) {
+            Pageable.unpaged()
+        } else {
+            PageRequest.of(page, pageSize, sort)
+        }
+
+        return ResponseEntity.ok(
+                when {
+                    date != null -> saleRepository.findSalesBySaleDate(date, pageable)
+                    beforeDate != null -> saleRepository.findSalesBySaleDateBefore(beforeDate, pageable)
+                    afterDate != null -> saleRepository.findSalesBySaleDateAfter(afterDate, pageable)
+                    else -> saleRepository.findAll(pageable)
+                }
+        )
+
+    }
 
     @GetMapping("/{id}")
     fun getSaleById(@PathVariable(value = "id") saleID: Int): ResponseEntity<Sale> =

@@ -3,26 +3,41 @@ package aut.bme.hu.onlabor.model
 import javax.persistence.*
 
 
-//find out why attributeoverride doesn't work
-//@Embeddable
-//data class Address(val zip: String?, val city: String?, val address: String)
-
-@Embeddable
-data class Contact(val phone: String?, val email: String?){
-    init {
-        if(phone == null && email == null){
-            throw IllegalArgumentException("A contact with only null values is not a valid contact!")
-        }
-    }
-}
-
 @Entity
 data class Customer(
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Int,
         var name: String,
-        var billingAddress: String,
+        var phone: String?,
+        var email: String?,
         var shippingAddress: String,
-        @Embedded
-        var contact: Contact
+        var billingAddress: String?
+) {
+    companion object {
+        fun fromDTO(customerDTO: PostCustomerDTO): Customer =
+                Customer(0,
+                        name = customerDTO.name,
+                        phone = customerDTO.phone,
+                        email = customerDTO.email,
+                        shippingAddress = customerDTO.shippingAddress,
+                        billingAddress = customerDTO.billingAddress)
+
+
+        fun fromDTO(customerDTO: PostCustomerDTO, id: Int): Customer =
+                Customer(id,
+                        name = customerDTO.name,
+                        phone = customerDTO.phone,
+                        email = customerDTO.email,
+                        shippingAddress = customerDTO.shippingAddress,
+                        billingAddress = customerDTO.billingAddress)
+
+    }
+}
+
+data class PostCustomerDTO(
+        val name: String,
+        val phone: String?,
+        val email: String?,
+        val shippingAddress: String,
+        val billingAddress: String?,
 )
