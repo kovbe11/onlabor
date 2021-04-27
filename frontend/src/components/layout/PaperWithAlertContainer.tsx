@@ -4,7 +4,19 @@ import {Alert} from "@material-ui/lab";
 import Container from "@material-ui/core/Container";
 import {TopBar} from "./Topbar";
 import {Paper} from "@material-ui/core";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
+const useStlyes = makeStyles({
+
+    container: {
+        padding: "24px",
+        justifyContent: "center",
+        width: "fit-content",
+        paddingTop: '2%',
+        marginBottom: '2%'
+    }
+
+})
 
 const ShowAlert = (severity: "error" | "success", msg: string) => (
     <Alert severity={severity}>
@@ -26,10 +38,12 @@ export default function PaperWithAlertContainer(props: PaperWithAlertContainerPr
         setAlertOpen(true)
     }
 
+    const classes = useStlyes()
+
     return (
         <>
             <TopBar/>
-            <Container style={{paddingTop: '2%', marginBottom: '2%'}}>
+            <Container className={classes.container}>
                 <Paper>
                     {props.render(showAlert)}
                 </Paper>

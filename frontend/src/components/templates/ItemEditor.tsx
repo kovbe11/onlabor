@@ -7,6 +7,8 @@ import {useHistory, useParams} from "react-router";
 import NotFound from "../layout/NotFound";
 import {Paper} from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+
 
 
 export interface ItemEditorProps {

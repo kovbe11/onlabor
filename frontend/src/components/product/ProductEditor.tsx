@@ -20,7 +20,8 @@ const useStyles = makeStyles({
     },
 
     inputGroup: {
-        width: '200px',
+        width: "90%",
+        minWidth: "250px",
         margin: '1em'
     }
 })
