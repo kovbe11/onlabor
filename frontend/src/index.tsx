@@ -13,7 +13,10 @@ const darkTheme = createMuiTheme({
                     margin: 0,
                     padding: 0,
                     background: "#363537",
-                    color: '#FAFAFA'
+                    color: '#FAFAFA',
+                },
+                html:{
+                    height: '100vh'
                 }
             }
         }
