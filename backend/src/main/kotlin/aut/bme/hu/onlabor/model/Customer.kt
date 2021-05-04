@@ -1,5 +1,8 @@
 package aut.bme.hu.onlabor.model
 
+import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonManagedReference
+import net.minidev.json.annotate.JsonIgnore
 import javax.persistence.*
 
 
@@ -11,7 +14,10 @@ data class Customer(
         var phone: String?,
         var email: String?,
         var shippingAddress: String,
-        var billingAddress: String?
+        var billingAddress: String?,
+        @OneToMany(mappedBy = "buyer", fetch = FetchType.LAZY)
+        @JsonBackReference
+        val purchases: MutableList<Sale> = mutableListOf()
 ) {
     companion object {
         fun fromDTO(customerDTO: PostCustomerDTO): Customer =

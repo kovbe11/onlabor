@@ -44,11 +44,6 @@ class SecurityConfig(private val userDetailsService: UserDetailsServiceImpl,
         return BCryptPasswordEncoder()
     }
 
-//    @Bean
-//    fun authenticationJwtTokenFilter(): JwtFilter {
-//        return jwtFilter
-//    }
-
     @Bean
     override fun authenticationManagerBean(): AuthenticationManager? {
         return super.authenticationManagerBean()

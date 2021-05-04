@@ -7,6 +7,8 @@ import { api } from '../utils/DataProvider'
 import { Typography } from '@material-ui/core'
 import { useHistory } from 'react-router'
 
+import { createHashHistory } from 'history'
+
 const useStyles = makeStyles({
   container: {
     width: '100%',
@@ -32,13 +34,17 @@ const useStyles = makeStyles({
     border: 'solid',
     borderWidth: '2px',
     borderRadius: '10px',
-    background: 'linear-gradient(349deg, rgb(240,240,240), rgb(245,245,245))',
+    background: 'transparent',
     boxShadow: '2px 2px 10px -2px black',
   },
 
   input: {
     margin: '5px',
   },
+})
+
+export const history = createHashHistory({
+  hashType: 'hashbang',
 })
 
 api.interceptors.request.use(
@@ -54,11 +60,26 @@ api.interceptors.request.use(
     Promise.reject(error)
   }
 )
+api.interceptors.response.use(
+  (response) => {
+    return response
+  },
+  (error) => {
+    if (error.response.status === 401) {
+      console.log('this actually runs')
+      localStorage.setItem('accessToken', '')
+      history.push('/login')
+    }
+    return error
+  }
+)
 
 export const login = (username: string, password: string) =>
   api.post('/auth/login', { username, password })
 
-export const isLoggedIn = () => !!localStorage.getItem('accessToken')
+export const isLoggedIn = () => {
+  return !!localStorage.getItem('accessToken')
+}
 
 export const Login = () => {
   const classes = useStyles()

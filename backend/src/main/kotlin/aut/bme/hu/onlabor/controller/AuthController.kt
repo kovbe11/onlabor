@@ -58,15 +58,5 @@ class AuthController(private val authenticationManager: AuthenticationManager,
         return ResponseEntity.ok("User registered successfully")
     }
 
-    @PostMapping("/logout")
-    fun logout() {
-        TODO()
-    }
-
-    @GetMapping
-    fun hello(): String {
-        return "hi!"
-    }
-
 
 }

@@ -6,6 +6,7 @@ import { useItems } from '../utils/DataProvider'
 import Grid from '@material-ui/core/Grid'
 import { EditItemForm, NewItemForm } from '../templates/ItemEditor'
 import makeStyles from '@material-ui/core/styles/makeStyles'
+import { mutate } from 'swr'
 
 function productDataMapping(data: any) {
   return { ...data, category: undefined, categoryName: data.category.name }

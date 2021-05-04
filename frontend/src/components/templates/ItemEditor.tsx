@@ -7,6 +7,7 @@ import { useHistory, useParams } from 'react-router'
 import { Paper } from '@material-ui/core'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { NotFound } from '../layout/NotFound'
+import { mutate } from 'swr'
 
 export interface ItemEditorProps {
   control: Control
@@ -25,7 +26,7 @@ function ItemEditor(props: ItemEditorProps) {
   return (
     <form onSubmit={props.onSubmit}>
       {props.renderInputs(control, errors, item)}
-      <SaveButton id={props.id} />
+      <SaveButton id={props.id}/>
     </form>
   )
 }
@@ -69,14 +70,20 @@ export const onSubmitEdit = (
   return (data: any) => {
     setLoading(true)
     let mappedData = mapper(data)
-    api
-      .put(apiPrefix + '/' + id, mappedData)
-      .then((r) => {
+    mutate(apiPrefix, async (items: any) => {
+      const updated = await api.put(apiPrefix + '/' + id, mappedData)
+
+      const filteredItems = items.filter((item: any) => item.id != id)
+      return [...filteredItems, updated.data]
+    }, true)
+      .then(r => {
         console.log(r)
         navigate()
-      })
-      .catch((reason) => console.log(reason))
-      .finally(() => setLoading(false))
+      }).catch((reason) => {
+      console.log(reason)
+      setLoading(false)
+    })
+
   }
 }
 
@@ -129,7 +136,7 @@ export function EditItemForm(props: EditItemFormProps) {
   return (
     <Paper>
       {loading ? (
-        <CircularProgress />
+        <CircularProgress/>
       ) : (
         <ItemEditor
           renderInputs={props.renderInputs}
@@ -148,7 +155,7 @@ export function EditItemForm(props: EditItemFormProps) {
           id={id}
         />
       )}
-      {saveLoading && <CircularProgress />}
+      {saveLoading && <CircularProgress/>}
     </Paper>
   )
 }
@@ -170,7 +177,8 @@ export function NewItemForm(props: NewItemFormProps) {
         control={control}
         errors={errors}
       />
-      {loading && <CircularProgress />}
+      {loading && <CircularProgress/>}
     </>
   )
 }
+
