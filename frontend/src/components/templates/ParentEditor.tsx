@@ -7,9 +7,9 @@ import { Control, useFieldArray, UseFieldArrayMethods, useForm } from 'react-hoo
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { useHistory, useParams } from 'react-router'
 import { Paper } from '@material-ui/core'
+import { NotFound } from '../layout/NotFound'
 import { onSubmitEdit, onSubmitNew, SubmitNewProps, SubmitProps } from './ItemEditor'
 import { api } from '../utils/DataProvider'
-import { NotFound } from '../layout/NotFound'
 
 const useStyles = makeStyles({
   inputGroupContainer: {

@@ -4,9 +4,9 @@ import { SaveButton } from '../layout/SaveButton'
 import React, { useEffect, useState } from 'react'
 import { api } from '../utils/DataProvider'
 import { useHistory, useParams } from 'react-router'
+import { NotFound } from '../layout/NotFound'
 import { Paper } from '@material-ui/core'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import { NotFound } from '../layout/NotFound'
 
 export interface ItemEditorProps {
   control: Control
@@ -25,7 +25,7 @@ function ItemEditor(props: ItemEditorProps) {
   return (
     <form onSubmit={props.onSubmit}>
       {props.renderInputs(control, errors, item)}
-      <SaveButton id={props.id} />
+      <SaveButton id={props.id}/>
     </form>
   )
 }
@@ -129,7 +129,7 @@ export function EditItemForm(props: EditItemFormProps) {
   return (
     <Paper>
       {loading ? (
-        <CircularProgress />
+        <CircularProgress/>
       ) : (
         <ItemEditor
           renderInputs={props.renderInputs}
@@ -148,7 +148,7 @@ export function EditItemForm(props: EditItemFormProps) {
           id={id}
         />
       )}
-      {saveLoading && <CircularProgress />}
+      {saveLoading && <CircularProgress/>}
     </Paper>
   )
 }
@@ -170,7 +170,7 @@ export function NewItemForm(props: NewItemFormProps) {
         control={control}
         errors={errors}
       />
-      {loading && <CircularProgress />}
+      {loading && <CircularProgress/>}
     </>
   )
 }
