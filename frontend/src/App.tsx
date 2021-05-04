@@ -1,5 +1,7 @@
 import React, { FC } from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+
+import { OrderList } from './components/order/OrderList'
 import { EditOrderForm } from './components/order/OrderEditor'
 import { EditSaleForm } from './components/sale/SaleEditor'
 import SaleList from './components/sale/SaleList'
@@ -10,7 +12,6 @@ import { EditCustomerForm } from './components/customer/CustomerEditor'
 import { Statistics } from './components/statistics/Statistics'
 import { PaperWithAlertContainer } from './components/layout/PaperWithAlertContainer'
 import { CustomerList } from './components/customer/CustomerList'
-import { OrderList } from './components/order/OrderList'
 import { Login } from './components/auth/Login'
 import { NotFound } from './components/layout/NotFound'
 
