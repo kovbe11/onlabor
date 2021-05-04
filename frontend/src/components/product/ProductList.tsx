@@ -17,6 +17,7 @@ export default function ProductList() {
       itemColumns={columns}
       newEntityTitle="New product"
       newEntityRender={(afterSubmit) => <NewProductForm executeAfterSubmit={afterSubmit} />}
+      defaultSorting={{columnName: 'name', direction: 'asc'}}
     />
   )
 }

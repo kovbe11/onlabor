@@ -4,9 +4,11 @@ import { SaveButton } from '../layout/SaveButton'
 import React, { useEffect, useState } from 'react'
 import { api } from '../utils/DataProvider'
 import { useHistory, useParams } from 'react-router'
-import { NotFound } from '../layout/NotFound'
 import { Paper } from '@material-ui/core'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import { NotFound } from '../layout/NotFound'
+import { mutate } from 'swr'
+
 
 export interface ItemEditorProps {
   control: Control
@@ -69,14 +71,20 @@ export const onSubmitEdit = (
   return (data: any) => {
     setLoading(true)
     let mappedData = mapper(data)
-    api
-      .put(apiPrefix + '/' + id, mappedData)
-      .then((r) => {
+    mutate(apiPrefix, async (items: any) => {
+      const updated = await api.put(apiPrefix + '/' + id, mappedData)
+
+      const filteredItems = items.filter((item: any) => item.id != id)
+      return [...filteredItems, updated.data]
+    }, true)
+      .then(r => {
         console.log(r)
         navigate()
-      })
-      .catch((reason) => console.log(reason))
-      .finally(() => setLoading(false))
+      }).catch((reason) => {
+      console.log(reason)
+      setLoading(false)
+    })
+
   }
 }
 
@@ -174,3 +182,4 @@ export function NewItemForm(props: NewItemFormProps) {
     </>
   )
 }
+

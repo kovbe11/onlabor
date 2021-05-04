@@ -6,6 +6,7 @@ import { Grid } from '@material-ui/core'
 import Checkbox from '@material-ui/core/Checkbox'
 import { EditItemForm, NewItemForm } from '../templates/ItemEditor'
 import makeStyles from '@material-ui/core/styles/makeStyles'
+import { mutate } from 'swr'
 
 const useStlyes = makeStyles({
   input: {

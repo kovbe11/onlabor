@@ -15,26 +15,26 @@ const darkTheme = createMuiTheme({
           color: '#FAFAFA',
         },
         html: {
-          height: '100vh',
+          height: '100vh'
         },
-      },
-    },
+      }
+    }
   },
 
   palette: {
     type: 'dark',
     primary: {
-      main: 'rgb(149,56,44)',
-    },
-  },
+      main: 'rgb(149,56,44)'
+    }
+  }
 })
 
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={darkTheme}>
       <>
-        <CssBaseline />
-        <App />
+        <CssBaseline/>
+        <App/>
       </>
     </ThemeProvider>
   </React.StrictMode>,

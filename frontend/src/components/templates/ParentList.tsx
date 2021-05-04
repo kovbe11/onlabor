@@ -1,13 +1,20 @@
 import NewEntityDialog from './NewEntityDialog'
 import React, { useState } from 'react'
 import { AxiosInstance } from 'axios'
-import { Column, CustomPaging, PagingState, RowDetailState } from '@devexpress/dx-react-grid'
+import {
+  Column,
+  ColumnSizes,
+  CustomPaging,
+  PagingState,
+  RowDetailState,
+  TableColumnWidthInfo
+} from '@devexpress/dx-react-grid'
 import {
   Grid,
   PagingPanel,
-  Table,
+  Table, TableColumnResizing,
   TableHeaderRow,
-  TableRowDetail,
+  TableRowDetail
 } from '@devexpress/dx-react-grid-material-ui'
 import { mutate } from 'swr'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -23,6 +30,7 @@ interface ParentListProps<Parent, Children> {
   childrenColumns: Column[]
   useParent: (queryString: string) => any
   createQueryString: (pagingFilteringSorting: any) => string
+  parentColumnWidths: TableColumnWidthInfo[]
   renderFilterer: (setFilterFn: (paramName: string, paramValue: string) => void) => JSX.Element
   renderSorter: (
     setSorterFn: (order: 'asc' | 'desc' | '', sortParam: string) => void
@@ -39,6 +47,8 @@ export default function ParentList<Parent, Children>(props: ParentListProps<Pare
     sorting: { sortParam: sorter.sortParam, order: sorter.order },
   })
   const { data, isLoading, isError } = props.useParent(queryString)
+
+  console.log(data)
 
   const deleteItem = (id: number) => {
     if (isLoading) return
@@ -75,6 +85,8 @@ export default function ParentList<Parent, Children>(props: ParentListProps<Pare
       </Grid>
     )
   }
+  console.log(props.parentColumnsGetter((id => {})))
+  console.log(props.parentColumnWidths)
 
   return (
     <>
@@ -85,6 +97,7 @@ export default function ParentList<Parent, Children>(props: ParentListProps<Pare
         <PagingState currentPage={currentPage} onCurrentPageChange={setCurrentPage} pageSize={5} />
         <CustomPaging totalCount={data ? data.totalElements : 0} />
         <Table />
+        <TableColumnResizing defaultColumnWidths={props.parentColumnWidths} resizingMode="nextColumn"/>
         <TableHeaderRow />
         <RowDetailState />
         <TableRowDetail contentComponent={ChildrenGrid} />

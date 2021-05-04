@@ -26,5 +26,6 @@ export const CustomerList = () => (
     newEntityTitle="New customer"
     apiPrefix="/customers"
     itemColumns={columns}
+    defaultSorting={{columnName: 'name', direction: 'asc'}}
   />
 )

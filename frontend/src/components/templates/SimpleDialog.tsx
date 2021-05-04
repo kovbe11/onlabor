@@ -22,8 +22,12 @@ const useStyles = makeStyles({
   openButton: {
     top: '-80px',
     marginBottom: '-105px',
-    marginLeft: '5%',
+    marginLeft: '5%'
   },
+
+  container: {
+    overflow: 'hidden'
+  }
 })
 
 export default function SimpleDialog(props: SimpleDialogProps) {
@@ -33,7 +37,7 @@ export default function SimpleDialog(props: SimpleDialogProps) {
   return (
     <>
       {props.renderOpenButton(dialogOpen, () => setDialogOpen(true), classes.openButton)}
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} className={classes.container}>
         <DialogTitle>{props.title}</DialogTitle>
         <DialogContent>{props.render(props.afterSubmit, () => setDialogOpen(false))}</DialogContent>
         <DialogActions>

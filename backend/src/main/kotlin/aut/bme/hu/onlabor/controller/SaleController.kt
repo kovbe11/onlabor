@@ -1,16 +1,16 @@
 package aut.bme.hu.onlabor.controller
 
 import aut.bme.hu.onlabor.model.*
+import aut.bme.hu.onlabor.repository.CustomerRepository
 import aut.bme.hu.onlabor.repository.ProductRepository
 import aut.bme.hu.onlabor.repository.SaleRepository
-import aut.bme.hu.onlabor.repository.SoldItemRepository
+import aut.bme.hu.onlabor.utils.findCustomerOrThrow
 import aut.bme.hu.onlabor.utils.findProductOrThrow
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.annotation.Secured
 import org.springframework.web.bind.annotation.*
 import java.sql.Date
 
@@ -19,19 +19,18 @@ import java.sql.Date
 @RequestMapping("/api/sales")
 class SaleController(
         private val saleRepository: SaleRepository,
-        private val productRepository: ProductRepository
+        private val productRepository: ProductRepository,
+        private val customerRepository: CustomerRepository
 ) {
 
     @GetMapping
     fun getPageableSortableFilterableSales(@RequestParam(defaultValue = "7") pageSize: Int,
-                                            @RequestParam page: Int?,
-                                            @RequestParam date: Date?,
-                                            @RequestParam beforeDate: Date?,
-                                            @RequestParam afterDate: Date?,
-//                                            @RequestParam valueMin: Int?, ez az infó csak customqueryvel van jelen, todo
-//                                            @RequestParam valueMax: Int?,
-                                            @RequestParam(defaultValue = "saleDate") sortParam: String,
-                                            @RequestParam(defaultValue = "desc") sortOrder: String):
+                                           @RequestParam page: Int?,
+                                           @RequestParam date: Date?,
+                                           @RequestParam beforeDate: Date?,
+                                           @RequestParam afterDate: Date?,
+                                           @RequestParam(defaultValue = "saleDate") sortParam: String,
+                                           @RequestParam(defaultValue = "desc") sortOrder: String):
             ResponseEntity<Page<Sale>> {
         val sort = Sort.by(Sort.Direction.fromString(sortOrder), sortParam)
 
@@ -49,7 +48,6 @@ class SaleController(
                     else -> saleRepository.findAll(pageable)
                 }
         )
-
     }
 
     @GetMapping("/{id}")
@@ -59,10 +57,11 @@ class SaleController(
             }.orElse(ResponseEntity.notFound().build())
 
     @PutMapping("/{id}")
-    fun updateSaleById(@RequestBody updatedSale: PutSaleDTO, @PathVariable(value = "id") saleId: Int) : ResponseEntity<Sale> {
+    fun updateSaleById(@RequestBody updatedSale: PutSaleDTO, @PathVariable(value = "id") saleId: Int): ResponseEntity<Sale> {
         //TODO: ellenőrizni hogy az solditemek amiket módosítunk tényleg ehhez a rendeléshez tartoznak-e
 
-        val sale = Sale(saleId, updatedSale.saleDate, mutableListOf())
+        val customer: Customer? = updatedSale.customerId?.let { findCustomerOrThrow(it, customerRepository) }
+        val sale = Sale(saleId, updatedSale.saleDate, mutableListOf(), customer)
         updatedSale.soldItems.forEach {
             val product = findProductOrThrow(it.productID, productRepository)
             val orderItem = SoldItem(it.id, it.itemIndex, it.price, it.amount, product, sale)
@@ -73,7 +72,8 @@ class SaleController(
 
     @PostMapping
     fun createNewSale(@RequestBody newSale: PostSaleDTO): ResponseEntity<Sale> {
-        val sale = Sale(0, newSale.saleDate)
+        val customer = newSale.customerId?.let { findCustomerOrThrow(newSale.customerId, customerRepository) }
+        val sale = Sale(0, newSale.saleDate, buyer = customer)
         newSale.soldItems.forEach {
             val product = findProductOrThrow(it.productID, productRepository)
             sale.soldItems.add(SoldItem(

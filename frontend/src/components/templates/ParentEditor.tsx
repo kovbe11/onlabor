@@ -32,6 +32,10 @@ const useStyles = makeStyles({
     width: '95%',
     margin: '1em',
   },
+
+  form: {
+    overflow: 'hidden'
+  }
 })
 
 interface ChildEditorProps {
@@ -64,7 +68,7 @@ function ParentEditor(props: ParentEditorProps) {
   }
 
   return (
-    <form onSubmit={props.onSubmit}>
+    <form onSubmit={props.onSubmit} className={classes.form}>
       <section className={classes.inputGroupContainer}>{props.renderParentInputs(control)}</section>
       <section>
         {fields.map((item: any, index) => (

@@ -53,7 +53,7 @@ export function ComboBoxInput<T>(comboProps: ComboProps<T>) {
           renderInput={(params) => (
             <TextField
               {...params}
-              fullWidth={false}
+              fullWidth={true}
               className={comboProps.className}
               label={comboProps.label}
               InputProps={{
@@ -64,6 +64,7 @@ export function ComboBoxInput<T>(comboProps: ComboProps<T>) {
                     {params.InputProps.endAdornment}
                   </React.Fragment>
                 ),
+
               }}
             />
           )}

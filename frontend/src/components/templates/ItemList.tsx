@@ -5,8 +5,8 @@ import {
   IntegratedPaging,
   IntegratedSorting,
   PagingState,
-  SearchState,
-  SortingState,
+  SearchState, Sorting,
+  SortingState
 } from '@devexpress/dx-react-grid'
 import { api, useItems } from '../utils/DataProvider'
 import IconButton from '@material-ui/core/IconButton'
@@ -28,6 +28,7 @@ export interface ItemListProps {
   newEntityTitle: string
   apiPrefix: string
   itemColumns: Column[]
+  defaultSorting: Sorting
 }
 
 export default function ItemList(props: ItemListProps) {
@@ -55,8 +56,8 @@ export default function ItemList(props: ItemListProps) {
   }
 
   const actionColumn = {
-    name: '',
-    title: '',
+    name: 'actions',
+    title: ' ',
     getCellValue: (row: any) => (
       <>
         {/*<IconButton component={Link} to={props.apiPrefix + '/' + row.id}><Edit color="primary"/></IconButton>*/}
@@ -81,7 +82,7 @@ export default function ItemList(props: ItemListProps) {
       <Grid rows={items ? items : []} columns={columns} getRowId={(row) => row.id}>
         <SearchState />
         <IntegratedFiltering />
-        <SortingState />
+        <SortingState defaultSorting={[props.defaultSorting]}/>
         <IntegratedSorting />
         <PagingState defaultCurrentPage={0} pageSize={4} />
         <IntegratedPaging />
