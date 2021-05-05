@@ -1,5 +1,6 @@
-package aut.bme.hu.onlabor.model
+package aut.bme.hu.onlabor.service
 
+import aut.bme.hu.onlabor.model.Product
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
 import java.sql.Date
@@ -8,6 +9,8 @@ import java.sql.Date
 typealias ProductProfits = Map<Int, ProductStatistics>
 typealias ValuesByMonth = List<Pair<String, Double>>
 typealias JSONObject = Map<String, Any>
+
+//TODO: make this a service, it is a typical case for it.
 
 data class ProductStatisticsDTO(
         val product: Product,

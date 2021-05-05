@@ -1,7 +1,7 @@
 package aut.bme.hu.onlabor.controller
 
-import aut.bme.hu.onlabor.model.*
 import aut.bme.hu.onlabor.repository.ProductRepository
+import aut.bme.hu.onlabor.service.*
 import org.springframework.http.ResponseEntity
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 class StatisticsController(private val jdbcTemplate: JdbcTemplate, private val productRepository: ProductRepository) {
 
 
-    fun mapToProductStatisticsDTO(entry: Map.Entry<Int, ProductStatistics>): ProductStatisticsDTO {
+    private fun mapToProductStatisticsDTO(entry: Map.Entry<Int, ProductStatistics>): ProductStatisticsDTO {
         return productRepository.findById(entry.key).map { ProductStatisticsDTO(it, entry.value) }.orElseThrow()
     }
 

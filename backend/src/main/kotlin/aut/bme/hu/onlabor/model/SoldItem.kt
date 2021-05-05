@@ -15,7 +15,11 @@ data class SoldItem(
         @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "sale_id", nullable = false)
         @JsonBackReference
         val sale: Sale
-)
+){
+        override fun toString(): String {
+                return "SoldItem(id=$id, itemIndex=$itemIndex, price=$price, amount=$amount, product=$product)"
+        }
+}
 
 data class PutSoldItemDTO(
         val id: Int,

@@ -19,6 +19,11 @@ data class Sale(
 ) {
     val saleValue: Double
         get() = soldItems.sumByDouble { it.price * it.amount }
+
+    override fun toString(): String {
+        return "Sale(id=$id, saleDate=$saleDate, soldItems=$soldItems, buyer=$buyer, saleValue=$saleValue)"
+    }
+
 }
 
 data class PostSaleDTO(

@@ -33,6 +33,7 @@ dependencies {
 		exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
 		exclude(module = "mockito-core")
 	}
+	testRuntimeOnly("com.h2database:h2")
 
 }
 
