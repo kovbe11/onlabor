@@ -1,18 +1,12 @@
 import NewEntityDialog from './NewEntityDialog'
 import React, { useState } from 'react'
 import { AxiosInstance } from 'axios'
-import {
-  Column,
-  ColumnSizes,
-  CustomPaging,
-  PagingState,
-  RowDetailState,
-  TableColumnWidthInfo
-} from '@devexpress/dx-react-grid'
+import { Column, CustomPaging, PagingState, RowDetailState, TableColumnWidthInfo } from '@devexpress/dx-react-grid'
 import {
   Grid,
   PagingPanel,
-  Table, TableColumnResizing,
+  Table,
+  TableColumnResizing,
   TableHeaderRow,
   TableRowDetail
 } from '@devexpress/dx-react-grid-material-ui'
@@ -44,7 +38,7 @@ export default function ParentList<Parent, Children>(props: ParentListProps<Pare
   const queryString = props.createQueryString({
     paging: { page: currentPage, size: 5 },
     filtering: { paramName: filter.paramName, paramValue: filter.paramValue },
-    sorting: { sortParam: sorter.sortParam, order: sorter.order },
+    sorting: { sortParam: sorter.sortParam, order: sorter.order }
   })
   const { data, isLoading, isError } = props.useParent(queryString)
 
@@ -79,32 +73,29 @@ export default function ParentList<Parent, Children>(props: ParentListProps<Pare
         rows={props.childrenRowsGetter(data.row)}
         columns={props.childrenColumns}
         getRowId={(row) => row.id}>
-        <Table />
-        <TableHeaderRow />
-        <RowDetailState />
+        <Table/>
+        <TableHeaderRow/>
+        <RowDetailState/>
       </Grid>
     )
   }
-  console.log(props.parentColumnsGetter((id => {})))
+  console.log(props.parentColumnsGetter((id => {
+  })))
   console.log(props.parentColumnWidths)
 
   return (
     <>
       <Grid rows={data ? data.content : []} columns={columns} getRowId={(row) => row.id}>
-        {/*<Toolbar rootComponent={Collapse}>*/}
-        {/*    {toRender}*/}
-        {/*</Toolbar>*/}
-        <PagingState currentPage={currentPage} onCurrentPageChange={setCurrentPage} pageSize={5} />
-        <CustomPaging totalCount={data ? data.totalElements : 0} />
-        <Table />
+        <PagingState currentPage={currentPage} onCurrentPageChange={setCurrentPage} pageSize={5}/>
+        <CustomPaging totalCount={data ? data.totalElements : 0}/>
+        <Table/>
         <TableColumnResizing defaultColumnWidths={props.parentColumnWidths} resizingMode="nextColumn"/>
-        <TableHeaderRow />
-        <RowDetailState />
-        <TableRowDetail contentComponent={ChildrenGrid} />
-        <PagingPanel />
+        <TableHeaderRow/>
+        <RowDetailState/>
+        <TableRowDetail contentComponent={ChildrenGrid}/>
+        <PagingPanel/>
       </Grid>
 
-      {/*az aftersubmit később nem fog kelleni az swr miatt*/}
       <NewEntityDialog
         render={props.newEntityRender}
         title={props.newEntityTitle}
@@ -112,7 +103,7 @@ export default function ParentList<Parent, Children>(props: ParentListProps<Pare
           await mutate(props.createQueryString({ paging: { page: currentPage, size: 5 } }))
         }}
       />
-      {isLoading && <LinearProgress style={{ width: '100%' }} />}
+      {isLoading && <LinearProgress style={{ width: '100%' }}/>}
       {props.renderFilterer((paramName, paramValue) =>
         setFilter({ paramName: paramName, paramValue: paramValue })
       )}

@@ -60,6 +60,7 @@ export function createParentQueryString<T>(params: QueryStringParameters<T>) {
     filtering && filtering.paramName && filtering.paramValue
       ? `&${filtering.paramName}=${filtering.paramValue}`
       : ''
+
   return `?page=${paging.page}&pageSize=${paging.size}${sorterString}${filterString}`
 }
 

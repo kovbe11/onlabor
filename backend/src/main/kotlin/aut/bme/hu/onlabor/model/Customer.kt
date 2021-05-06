@@ -1,8 +1,6 @@
 package aut.bme.hu.onlabor.model
 
 import com.fasterxml.jackson.annotation.JsonBackReference
-import com.fasterxml.jackson.annotation.JsonManagedReference
-import net.minidev.json.annotate.JsonIgnore
 import javax.persistence.*
 
 
@@ -10,11 +8,11 @@ import javax.persistence.*
 data class Customer(
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Int,
-        var name: String,
-        var phone: String?,
-        var email: String?,
-        var shippingAddress: String,
-        var billingAddress: String?,
+        var name: String?,
+        var phone: String? = null,
+        var email: String? = null,
+        var shippingAddress: String?,
+        var billingAddress: String? = null,
         @OneToMany(mappedBy = "buyer", fetch = FetchType.LAZY)
         @JsonBackReference
         val purchases: MutableList<Sale> = mutableListOf()
@@ -37,6 +35,10 @@ data class Customer(
                         shippingAddress = customerDTO.shippingAddress,
                         billingAddress = customerDTO.billingAddress)
 
+    }
+
+    override fun toString(): String {
+        return "Customer(id=$id, name=$name, phone=$phone, email=$email, shippingAddress=$shippingAddress, billingAddress=$billingAddress)"
     }
 }
 

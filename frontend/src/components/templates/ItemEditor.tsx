@@ -47,6 +47,7 @@ export const onSubmitNew = (setLoading: (loading: boolean) => void, props: Submi
   return (data: any) => {
     setLoading(true)
     let mappedData = mapper(data)
+    console.log(mappedData)
     api
       .post(apiPrefix, mappedData)
       .then((r) => {
@@ -74,7 +75,7 @@ export const onSubmitEdit = (
     mutate(apiPrefix, async (items: any) => {
       const updated = await api.put(apiPrefix + '/' + id, mappedData)
 
-      const filteredItems = items.filter((item: any) => item.id != id)
+      const filteredItems = items.filter((item: any) => item.id != id) //!= is intentional!
       return [...filteredItems, updated.data]
     }, true)
       .then(r => {

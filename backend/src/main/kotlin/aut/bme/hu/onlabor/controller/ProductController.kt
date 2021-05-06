@@ -36,16 +36,6 @@ class ProductController(private val productRepository: ProductRepository,
                 productRepository.save(product)
             }.orElse(null)
 
-
-//    @PatchMapping
-//    fun patchProductsInBulk(@RequestBody patchings: Map<Int, PatchProductDTO>):
-//            ResponseEntity<List<Product>> {
-//        val patchedProducts: MutableList<Product> = mutableListOf()
-//        patchings.forEach { (id, patching) ->
-//            val product = patchProduct(id, patching)
-//        }
-//    }
-
     @PatchMapping("/{id}")
     fun patchProductById(@PathVariable(value = "id") productID: Int,
                          @RequestBody newProductDTO: PatchProductDTO): ResponseEntity<Product> =
@@ -65,7 +55,7 @@ class ProductController(private val productRepository: ProductRepository,
                                     updatedProduct.name,
                                     updatedProduct.available,
                                     updatedProduct.description,
-                                    findCategoryByNameOrThrow(updatedProduct.categoryName, categoryRepository)
+                                    updatedProduct.categoryName?.let { findCategoryByNameOrThrow(it, categoryRepository) }
                             )
                     )
             )
@@ -80,7 +70,7 @@ class ProductController(private val productRepository: ProductRepository,
                                     product.name,
                                     product.available,
                                     product.description,
-                                    findCategoryByNameOrThrow(product.categoryName, categoryRepository)
+                                    product.categoryName?.let { findCategoryByNameOrThrow(it, categoryRepository) }
                             )
                     )
             )

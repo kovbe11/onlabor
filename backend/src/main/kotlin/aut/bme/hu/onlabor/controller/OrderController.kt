@@ -23,9 +23,6 @@ class OrderController(
         private val productRepository: ProductRepository
 ) {
 
-//    @GetMapping
-//    fun getAllOrders(): ResponseEntity<List<Order>> = ResponseEntity.ok(orderRepository.findAll())
-
 
     @GetMapping
     fun getPageableSortableFilterableOrders(@RequestParam(defaultValue = "7") pageSize: Int,
@@ -33,8 +30,6 @@ class OrderController(
                                             @RequestParam date: Date?,
                                             @RequestParam beforeDate: Date?,
                                             @RequestParam afterDate: Date?,
-//                                            @RequestParam valueMin: Int?, ez az infó csak customqueryvel van jelen, todo
-//                                            @RequestParam valueMax: Int?,
                                             @RequestParam(defaultValue = "orderDate") sortParam: String,
                                             @RequestParam(defaultValue = "desc") sortOrder: String):
             ResponseEntity<Page<Order>> {
@@ -57,7 +52,6 @@ class OrderController(
 
     }
 
-    @PreAuthorize("hasAuthority('ROLE_USER')")
     @GetMapping("/statuses")
     fun getOrderItemStatuses(): ResponseEntity<Array<OrderStatus>> = ResponseEntity.ok(OrderStatus.values())
 

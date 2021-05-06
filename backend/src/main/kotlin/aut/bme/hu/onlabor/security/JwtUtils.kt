@@ -13,7 +13,6 @@ import java.util.*
 @Component
 class JwtUtils {
     val jwtSecret = "randomsecret"
-    val jwtIssuer = "kisboltiNyilvantarto"
     private val logger: Logger = LoggerFactory.getLogger(JwtUtils::class.java)
 
 
@@ -26,7 +25,7 @@ class JwtUtils {
 
         return Jwts.builder()
                 .setSubject(userPrincipal.username)
-                .setIssuer(jwtIssuer)
+                .claim("username", userPrincipal.username)
                 .setIssuedAt(Date())
                 .setExpiration(Date(System.currentTimeMillis() + hour))
                 .signWith(HS512, jwtSecret)

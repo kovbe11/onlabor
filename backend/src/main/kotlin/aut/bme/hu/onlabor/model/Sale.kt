@@ -15,20 +15,25 @@ data class Sale(
         val soldItems: MutableList<SoldItem> = mutableListOf(),
         @ManyToOne @JoinColumn(name = "customer_id", nullable = true)
         @JsonManagedReference
-        val buyer: Customer?
+        val buyer: Customer? = null
 ) {
     val saleValue: Double
         get() = soldItems.sumByDouble { it.price * it.amount }
+
+    override fun toString(): String {
+        return "Sale(id=$id, saleDate=$saleDate, soldItems=$soldItems, buyer=$buyer, saleValue=$saleValue)"
+    }
+
 }
 
 data class PostSaleDTO(
         val saleDate: Date,
         val soldItems: List<PostSoldItemDTO>,
-        val customerId: Int?
+        val customerId: Int? = null
 )
 
 data class PutSaleDTO(
         val saleDate: Date,
         val soldItems: List<PutSoldItemDTO>,
-        val customerId: Int?
+        val customerId: Int? = null
 )

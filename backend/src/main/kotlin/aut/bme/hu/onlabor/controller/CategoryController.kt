@@ -19,8 +19,7 @@ class CategoryController(private val categoryRepository: CategoryRepository) {
             ResponseEntity.ok().body(categoryRepository.save(Category(0, categoryName)))
 
     @PutMapping
-    fun updateCategoryName(@RequestBody category: Category) =
-            ResponseEntity.ok().body(categoryRepository.save(category))
+    fun updateCategoryName(@RequestBody category: Category): ResponseEntity<Category> = ResponseEntity.ok().body(categoryRepository.save(category))
 
     @DeleteMapping("/{id}")
     fun deleteCategoryById(@PathVariable(value = "id") categoryId: Int): ResponseEntity<Category> =
