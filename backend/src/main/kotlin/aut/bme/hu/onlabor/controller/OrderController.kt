@@ -52,7 +52,6 @@ class OrderController(
 
     }
 
-    @PreAuthorize("hasAuthority('ROLE_USER')")
     @GetMapping("/statuses")
     fun getOrderItemStatuses(): ResponseEntity<Array<OrderStatus>> = ResponseEntity.ok(OrderStatus.values())
 

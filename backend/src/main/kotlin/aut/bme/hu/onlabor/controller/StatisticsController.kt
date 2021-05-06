@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 @CrossOrigin(origins = ["*"])
 @RestController
 @RequestMapping("/api/statistics")
-class StatisticsController(private val jdbcTemplate: JdbcTemplate, private val productRepository: ProductRepository) {
+class StatisticsController(private val statisticsService: StatisticsService, private val productRepository: ProductRepository) {
 
 
     private fun mapToProductStatisticsDTO(entry: Map.Entry<Int, ProductStatistics>): ProductStatisticsDTO {
@@ -22,8 +22,8 @@ class StatisticsController(private val jdbcTemplate: JdbcTemplate, private val p
 
     @GetMapping
     fun getStatistics(): ResponseEntity<JSONObject> {
-        val incomes = getIncomeByMonth(jdbcTemplate)
-        val expenses = getExpenseByMonth(jdbcTemplate)
+        val incomes = statisticsService.getIncomeByMonth()
+        val expenses = statisticsService.getExpenseByMonth()
 
         val incomesAndExpenses = mutableListOf<JSONObject>()
 
@@ -39,8 +39,8 @@ class StatisticsController(private val jdbcTemplate: JdbcTemplate, private val p
             }
         }
 
-        val top5ProductProfits = getProductProfits(jdbcTemplate).map { mapToProductStatisticsDTO(it) }
-        val top5ProductLosses = getBadInvestmentProducts(jdbcTemplate).map { mapToProductStatisticsDTO(it) }
+        val top5ProductProfits = statisticsService.getProductProfits().map { mapToProductStatisticsDTO(it) }
+        val top5ProductLosses = statisticsService.getBadInvestmentProducts().map { mapToProductStatisticsDTO(it) }
 
         val ret = mapOf(
                 "incomesAndExpenses" to incomesAndExpenses,

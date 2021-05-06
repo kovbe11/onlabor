@@ -3,19 +3,13 @@ package aut.bme.hu.onlabor.service
 import aut.bme.hu.onlabor.model.Product
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
+import org.springframework.stereotype.Service
 import java.sql.Date
 
 
 typealias ProductProfits = Map<Int, ProductStatistics>
 typealias ValuesByMonth = List<Pair<String, Double>>
 typealias JSONObject = Map<String, Any>
-
-//TODO: make this a service, it is a typical case for it.
-
-data class ProductStatisticsDTO(
-        val product: Product,
-        val productStatistics: ProductStatistics
-)
 
 const val expenseByMonthQuery = """
     SELECT o.order_date AS "date", SUM(oi.amount * oi.price) AS expense FROM orders o JOIN order_item oi ON oi.order_id = o.id GROUP BY YEAR(o.order_date), MONTH(o.order_date) ORDER BY o.order_date ASC LIMIT 12
@@ -47,7 +41,6 @@ const val productBadInvestmentsQuery = """
     LIMIT 5
 """
 
-
 fun toMonthString(date: Date): String {
     val localDate = date.toLocalDate()
     val monthValue = localDate.monthValue
@@ -60,68 +53,73 @@ fun toMonthString(date: Date): String {
     return "${localDate.year}-$monthString"
 }
 
-fun getIncomeByMonth(jdbcTemplate: JdbcTemplate): ValuesByMonth {
+@Service
+class StatisticsService(private val jdbcTemplate: JdbcTemplate) {
 
-    val incomes = mutableListOf<Pair<String, Double>>()
+    fun getIncomeByMonth(): ValuesByMonth {
 
-    jdbcTemplate.query(incomeByMonthQuery) { rs, _ ->
-        val date = rs.getDate("date")
-        incomes.add(toMonthString(date) to rs.getDouble("income"))
+        val incomes = mutableListOf<Pair<String, Double>>()
+
+        jdbcTemplate.query(incomeByMonthQuery) { rs, _ ->
+            val date = rs.getDate("date")
+            incomes.add(toMonthString(date) to rs.getDouble("income"))
+        }
+
+        return incomes.toList()
     }
 
-    return incomes.toList()
+    fun getExpenseByMonth(): ValuesByMonth {
+
+        val expenses = mutableListOf<Pair<String, Double>>()
+
+        jdbcTemplate.query(expenseByMonthQuery) { rs, _ ->
+            val date = rs.getDate("date")
+            expenses.add(toMonthString(date) to rs.getDouble("expense"))
+        }
+
+        return expenses.toList()
+    }
+
+    fun getProductProfits(): ProductProfits {
+
+        val productProfits = mutableMapOf<Int, ProductStatistics>()
+
+        jdbcTemplate.query(productProfitsQuery) { rs, _ ->
+            val income = rs.getDouble("income")
+            val expense = rs.getDouble("expense")
+
+            if (income - expense > 0) {
+                productProfits[rs.getInt("product_id")] = ProductStatistics(income, expense, rs.getDate("last_sale"))
+            }
+        }
+
+        return productProfits.toMap()
+    }
+
+    fun getBadInvestmentProducts(): ProductProfits {
+
+        val productProfits = mutableMapOf<Int, ProductStatistics>()
+
+        jdbcTemplate.query(productBadInvestmentsQuery) { rs, _ ->
+            val income = rs.getDouble("income")
+            val expense = rs.getDouble("expense")
+
+            if (income - expense < 0) {
+                productProfits[rs.getInt("product_id")] = ProductStatistics(income, expense, rs.getDate("last_sale"))
+            }
+        }
+
+        return productProfits.toMap()
+    }
+
 }
 
-fun getExpenseByMonth(jdbcTemplate: JdbcTemplate): ValuesByMonth {
-
-    val expenses = mutableListOf<Pair<String, Double>>()
-
-    jdbcTemplate.query(expenseByMonthQuery, RowMapper { rs, _ ->
-        val date = rs.getDate("date")
-        expenses.add(toMonthString(date) to rs.getDouble("expense"))
-    })
-
-    return expenses.toList()
-}
+data class ProductStatisticsDTO(
+        val product: Product,
+        val productStatistics: ProductStatistics
+)
 
 data class ProductStatistics(val income: Double, val expense: Double, val lastSale: Date) {
     val profit: Double
         get() = income - expense
 }
-
-fun getProductProfits(jdbcTemplate: JdbcTemplate): ProductProfits {
-
-    val productProfits = mutableMapOf<Int, ProductStatistics>()
-
-    jdbcTemplate.query(productProfitsQuery, RowMapper { rs, _ ->
-        val income = rs.getDouble("income")
-        val expense = rs.getDouble("expense")
-
-        if (income - expense > 0) {
-            productProfits[rs.getInt("product_id")] = ProductStatistics(income, expense, rs.getDate("last_sale"))
-        }
-    })
-
-    return productProfits.toMap()
-}
-
-fun getBadInvestmentProducts(jdbcTemplate: JdbcTemplate): ProductProfits {
-
-    val productProfits = mutableMapOf<Int, ProductStatistics>()
-
-    jdbcTemplate.query(productBadInvestmentsQuery, RowMapper { rs, _ ->
-        val income = rs.getDouble("income")
-        val expense = rs.getDouble("expense")
-
-        if (income - expense < 0) {
-            productProfits[rs.getInt("product_id")] = ProductStatistics(income, expense, rs.getDate("last_sale"))
-        }
-    })
-
-    return productProfits.toMap()
-}
-
-
-
-
-

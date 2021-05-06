@@ -17,16 +17,16 @@ data class Order(
         @OneToMany(mappedBy = "order", cascade = [CascadeType.ALL], orphanRemoval = true) @JsonManagedReference
         val orderItems: MutableList<OrderItem> = mutableListOf()
 ) {
-    @Formula("(SELECT SUM(order_item.price * order_item.amount) FROM order_item WHERE order_item.order_id = id)")
+    @Formula("(SELECT COALESCE(SUM(order_item.price * order_item.amount), 0) FROM order_item WHERE order_item.order_id = id)")
     val orderValue: Double = 0.0
 }
 
 data class PostOrderDTO(
         val orderDate: Date,
-        val orderItems: List<PostOrderItemDTO> = listOf()
+        val orderItems: List<PostOrderItemDTO>
 )
 
 data class PutOrderDTO(
         val orderDate: Date,
-        val orderItems: List<PutOrderItemDTO> = listOf()
+        val orderItems: List<PutOrderItemDTO>
 )
