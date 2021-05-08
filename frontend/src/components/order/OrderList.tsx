@@ -43,7 +43,7 @@ const orderItemColumns: Column[] = [
   },
   { name: 'price', title: 'Price', getCellValue: (row) => row.price },
   { name: 'amount', title: 'Amount', getCellValue: (row) => row.amount },
-  { name: 'status', title: 'Status', getCellValue: (row) => row.status },
+  { name: 'status', title: 'Status', getCellValue: (row) => statusMapper(row.status) },
 ]
 
 const orderColumns = (deleteItem: (id: number) => void) => [

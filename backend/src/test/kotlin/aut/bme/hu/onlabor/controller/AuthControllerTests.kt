@@ -46,9 +46,14 @@ class AuthControllerTests {
 
     @Test
     fun testLogin() {
+        val unauthorizedResponse: ResponseEntity<Map<String, Any>> = testRestTemplate.exchange(
+                "/statistics".api(),
+                HttpMethod.GET)
+        assertEquals(401, unauthorizedResponse.statusCodeValue)
+
         val request = LoginDTO("admin", "admin")
 
-        val response: ResponseEntity<JwtResponse>? = testRestTemplate.postForEntity("/auth/login".api(), request, JwtResponse::class.java)
+        val response = testRestTemplate.postForEntity("/auth/login".api(), request, JwtResponse::class.java)
         assertEquals(200, response?.statusCodeValue)
 
         val authorizedRequest = "".asRequest(response!!.body!!.token)

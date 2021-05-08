@@ -19,9 +19,8 @@ class CustomerController(private val customerRepository: CustomerRepository) {
 
     @GetMapping("/{id}")
     fun getCustomerById(@PathVariable(value = "id") customerId: Int): ResponseEntity<Customer> =
-            customerRepository.findById(customerId).map {
-                ResponseEntity.ok(it)
-            }.orElse(ResponseEntity.notFound().build())
+            customerRepository.findById(customerId).map { ResponseEntity.ok(it) }
+                    .orElse(ResponseEntity.notFound().build())
 
     @PostMapping
     fun createCustomer(@RequestBody customer: PostCustomerDTO): ResponseEntity<Customer> =
@@ -30,9 +29,7 @@ class CustomerController(private val customerRepository: CustomerRepository) {
     @PutMapping("/{id}")
     fun updateCustomerById(@PathVariable(value = "id") customerId: Int,
                           @RequestBody updatedCustomer: PostCustomerDTO): ResponseEntity<Customer> =
-            ResponseEntity.ok().body(
-                    customerRepository.save(Customer.fromDTO(updatedCustomer, customerId))
-            )
+            ResponseEntity.ok().body(customerRepository.save(Customer.fromDTO(updatedCustomer, customerId)))
 
     @DeleteMapping("/{id}")
     fun deleteCustomerById(@PathVariable(value = "id") customerId: Int): ResponseEntity<Customer> =

@@ -63,8 +63,6 @@ class OrderController(
 
     @PutMapping("/{id}")
     fun updateOrderById(@RequestBody updatedOrder: PutOrderDTO, @PathVariable(value = "id") orderID: Int): ResponseEntity<Order> {
-        //TODO: ellenőrizni hogy az orderitemek amiket módosítunk tényleg ehhez a rendeléshez tartoznak-e
-
         val order = Order(orderID, updatedOrder.orderDate, mutableListOf())
         updatedOrder.orderItems.forEach {
             val product = findProductOrThrow(it.productID, productRepository)
