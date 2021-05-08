@@ -34,11 +34,8 @@ class SaleController(
             ResponseEntity<Page<Sale>> {
         val sort = Sort.by(Sort.Direction.fromString(sortOrder), sortParam)
 
-        val pageable = if (page == null) {
-            Pageable.unpaged()
-        } else {
-            PageRequest.of(page, pageSize, sort)
-        }
+        val pageable = if (page == null) { Pageable.unpaged() }
+                        else { PageRequest.of(page, pageSize, sort) }
 
         return ResponseEntity.ok(
                 when {
@@ -58,7 +55,6 @@ class SaleController(
 
     @PutMapping("/{id}")
     fun updateSaleById(@RequestBody updatedSale: PutSaleDTO, @PathVariable(value = "id") saleId: Int): ResponseEntity<Sale> {
-        //TODO: ellenőrizni hogy az solditemek amiket módosítunk tényleg ehhez a rendeléshez tartoznak-e
 
         val customer: Customer? = updatedSale.customerId?.let { findCustomerOrThrow(it, customerRepository) }
         val sale = Sale(saleId, updatedSale.saleDate, mutableListOf(), customer)
@@ -76,15 +72,7 @@ class SaleController(
         val sale = Sale(0, newSale.saleDate, buyer = customer)
         newSale.soldItems.forEach {
             val product = findProductOrThrow(it.productID, productRepository)
-            sale.soldItems.add(SoldItem(
-                    0,
-                    it.itemIndex,
-                    it.price,
-                    it.amount,
-                    product,
-                    sale
-            ))
-
+            sale.soldItems.add(SoldItem(0, it.itemIndex, it.price, it.amount, product, sale))
         }
         return ResponseEntity.ok(saleRepository.save(sale))
     }
